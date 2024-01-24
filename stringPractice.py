@@ -1,3 +1,4 @@
+import string
 # 1:
 def firstLast2(string):
     '''Return a string comprised of the first two and the last two characters in input string'''
@@ -64,3 +65,30 @@ def findUSA(string):
     return count
 
 print(findUSA("USA? Inexcusable crusaders by the thousands!"))
+
+# 6:
+def cleanUp(text):
+    output = ""
+    allLetters = string.ascii_lowercase + string.ascii_uppercase
+    for char in text:
+        if char in allLetters:
+            output += char
+    return output.lower()
+
+print(cleanUp("Crypto2024 is cool ;) "))
+
+# 7:
+def wordList(text):
+    outputList = []
+    allLetters = string.ascii_lowercase + string.ascii_uppercase
+    cacheWord = ""
+    for char in text:
+        if char in allLetters:
+            cacheWord += char.lower()
+        elif len(cacheWord) > 0:
+            outputList.append(cacheWord)
+            cacheWord = ""
+
+    return outputList
+
+print(wordList("Crypto2024 is cool ;) "))
