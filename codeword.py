@@ -6,7 +6,10 @@ def generateCodeDict(codeword):
         if char not in uniqueCharCodeword:
             uniqueCharCodeword += char
     cipherAlphabet = [char.upper() for char in uniqueCharCodeword]
-    for char in string.ascii_uppercase:
+
+    changedAlphabet = string.ascii_uppercase[string.ascii_lowercase.find(codeword[-1]):] + string.ascii_uppercase[:string.ascii_lowercase.find(codeword[-1])]
+
+    for char in changedAlphabet:
         if char not in cipherAlphabet:
             cipherAlphabet.append(char)
 
