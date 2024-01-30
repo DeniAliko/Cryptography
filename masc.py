@@ -48,6 +48,7 @@ def masc(text, subD):
 # print(masc("ABCD", {"A": "B", "B": "C", "C": "D"}))
 
 def bruteForce(CT):
+    output = []
     for i in range(1, 26):
         shiftDict = {}
         for j in range(len(string.ascii_lowercase)):
@@ -56,6 +57,7 @@ def bruteForce(CT):
         decode = ""
         for char in CT:
             decode += shiftDict[char]
-        print(decode)
+        output.append(decode)
+    return output
 
 bruteForce(dictEncrypt(pt.replace(" ", "").lower(), int(input("Shift: "))).lower())
