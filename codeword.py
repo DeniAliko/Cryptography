@@ -1,6 +1,6 @@
 import string
 
-def generateCodeDict(codeword):
+def generateCodewordDict(codeword):
     uniqueCharCodeword = ""
     for char in codeword:
         if char not in uniqueCharCodeword:
@@ -35,6 +35,6 @@ def masc(text, subD):
 
 pt = input("Plain text: ")
 codeword = input("Codeword: ")
-ct = masc(pt, generateCodeDict(codeword))
+ct = masc(pt, generateCodewordDict(codeword))
 print(ct)
-print(masc(ct, reverseDict(generateCodeDict(codeword))).lower())
+print(masc(ct, reverseDict(generateCodewordDict(codeword))).lower())
