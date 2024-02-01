@@ -4,6 +4,19 @@ def openFile(path, fileName):
 
     return output
 
+def writeFile(path, fileName, text):
+    with open(path + fileName, mode = "w") as f:
+        f.write(text)
+
+def keepLowercaseLetters(text):
+    output = ""
+    lowercase = "abcdefghijklmnopqrstuvwxyz"
+    for char in text.lower():
+        if char in lowercase:
+            output += char
+
+    return output
+
 def printList(list):
     for item in list:
         print(item)
