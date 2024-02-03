@@ -1,3 +1,4 @@
+# MISC:
 def openFile(path, fileName):
     with open(path + fileName, mode = "r") as f:
         output = [i.strip() for i in f.readlines()]
@@ -21,6 +22,28 @@ def printList(list):
     for item in list:
         print(item)
 
+def letterFrequency(text):
+    lowercase = "abcdefghijklmnopqrstuvwxyz"
+    uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    counts = {}
+    for char in lowercase:
+        counts[char] = 0
+
+    for char in text.lower():
+        if char in counts.keys():
+            counts[char] += 1
+
+    totalCount = 0
+    for char in counts.keys():
+        totalCount += counts[char]
+
+    output = {}
+    for char in counts.keys():
+        output[char] = round((counts[char] / totalCount), 2)
+
+    return output
+
+# MASC CIPHERS:
 def bruteForce(ct):
     output = []
     cipher = ct.upper()
