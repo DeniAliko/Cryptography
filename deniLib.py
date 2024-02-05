@@ -22,6 +22,8 @@ def printList(list):
     for item in list:
         print(item)
 
+# FREQUENCY ANALYSIS:
+
 def letterFrequency(text):
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -40,6 +42,36 @@ def letterFrequency(text):
     output = {}
     for char in counts.keys():
         output[char] = round((counts[char] / totalCount), 2)
+
+    return output
+
+def digraphFrequency(text, displayNum):
+    frequencies = {}
+    for i in range(0, len(text) - 1):
+        if text[i] + text[i+1] not in frequencies:
+            frequencies[text[i] + text[i+1]] = 1
+        else:
+            frequencies[text[i] + text[i+1]] += 1
+
+    orgFrequencies = sorted(frequencies.items(), key=lambda x:x[1], reverse=True)
+    output = {}
+    for i in range(0, displayNum):
+        output[orgFrequencies[i][0]] = orgFrequencies[i][1]
+
+    return output
+
+def trigraphFrequency(text, displayNum):
+    frequencies = {}
+    for i in range(0, len(text) - 2):
+        if text[i] + text[i+1] + text[i+2] not in frequencies:
+            frequencies[text[i] + text[i+1] + text[i+2]] = 1
+        else:
+            frequencies[text[i] + text[i+1] + text[i+2]] += 1
+
+    orgFrequencies = sorted(frequencies.items(), key=lambda x:x[1], reverse=True)
+    output = {}
+    for i in range(0, displayNum):
+        output[orgFrequencies[i][0]] = orgFrequencies[i][1]
 
     return output
 

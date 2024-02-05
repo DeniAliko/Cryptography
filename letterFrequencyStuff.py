@@ -1,4 +1,9 @@
+import os
 import deniLib as dl
-testText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+path = os.getcwd() + "\\"
+name = "testText.txt"
 
-print(dl.letterFrequency(testText))
+test = dl.openFile(path, name)[0]
+print(dl.letterFrequency(test))
+print(dl.digraphFrequency(test, 10))
+print(dl.trigraphFrequency(test, 10))
