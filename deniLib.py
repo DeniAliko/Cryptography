@@ -22,6 +22,41 @@ def printList(list):
     for item in list:
         print(item)
 
+def reverseDict(dictionary):
+    output = {}
+    for char in dictionary.keys():
+        output[dictionary[char]] = char
+    return output
+
+# TRANSPOSITION CIPHERS
+
+def railFence(text, rowNum):
+    table = [["" for j in range(len(text))] for i in range(rowNum)]
+    walkerCoord = [0, 0]
+    down = True
+    for charindex in range(len(text)):
+        table[walkerCoord[1]][walkerCoord[0]] = text[charindex]
+        if walkerCoord[1] == rowNum - 1 and down:
+            down = not down
+        elif walkerCoord[1] == 0 and not down:
+            down = not down
+
+        if walkerCoord[0] < len(text) - 1:
+            walkerCoord[0] += 1
+        else:
+            break
+        if down:
+            walkerCoord[1] += 1
+        else:
+            walkerCoord[1] -= 1
+
+    output = ""
+    for i in range(rowNum):
+        for j in range(len(text)):
+            output += table[i][j]
+
+    return output
+
 # FREQUENCY ANALYSIS:
 
 def letterFrequency(text):
@@ -90,12 +125,6 @@ def bruteForce(ct):
         for char in cipher:
             decode += shiftDict[char]
         output.append(decode)
-    return output
-
-def reverseDict(dictionary):
-    output = {}
-    for char in dictionary.keys():
-        output[dictionary[char]] = char
     return output
 
 def generateCodewordDict(codeword):

@@ -1,0 +1,21 @@
+kw = "XMZOMKRVIKVJQVKKVOCLDTVPIFJDBDMBRICLTOKFTJVKIVKTIZICTOKVJAUVRJDKKLTIJMEORDBIBRDCILTIVBKQIJLDLTOKHMIKLODBMKOBGVYIUQDJCROFTIJMKOBGUDMJNOJKLBVAIVBCZVKLBVAIKIFVJVLICEUVQTOLIKFVRIVKLTIYIUFTJVKILTIBIAVOZUDMJIBRJUFLICVBKQIJLDAJNDBLVOBI"
+ct = "KFIVTVZMVWLCCTIVUZKFEKYZJRJJZXEDVEKPFLEVVUKFUVTZGYVIKYVDVJJRXVTFEKRZEVUZEKYVWZCVMOUFKKOKKYRKYRJSVVEVETFUVUNZKYRBVPNFIUTZGYVIKYVBVPNFIUZJKYVERDVFWKYVXRCCZTTYZVWKRZENYFNRJUVWVRKVUSPTRVJRIZEWZWKPKNFST"
+
+import deniLib as dl
+
+# dl.printList(dl.bruteForce(ct))
+
+# toreceivefullcreditonthisassignmentyouneedtodecipherthemessagecontainedinthefilevxdottxtthathasbeenencodedwithakeywordcipherthekeywordisthenameofthegallicchieftainwhowasdefeatedbycaesarinfiftytwobc
+keywordDict = dl.reverseDict(dl.generateCodewordDict("vercingetorix"))
+# print(dl.masc(kw, keywordDict))
+
+pt = "aleaiactaest"
+codeword = "deni aliko"
+keywordDict = dl.generateCodewordDict(dl.keepLowercaseLetters(codeword))
+print("answer to the first assignment:")
+print(dl.masc(pt, keywordDict))
+
+v5 = "maqepikbfzkknkngalebnikgjkipclkgskkzuzasbzigjkebijggjbziganapznpmgqpxxvnabzibgbzyafgkgjbmpxnbxkyypfgjknboobmqxgcealxkybfzaguzasbzisjpgskfjaqxnnalqgepgjkejprbzigjkfgekzigjaomjpepmgkegaoaxxasgjeaqijazaqemazrbmgbazfbggpukfmaqepikgaekoepbzoeaypseazioqxpmgbazbggpukfkrkziekpgkemaqepikgapnybgsjkzskjprknazkfaykgjbziseazipznypukpykznfbggpukfktmkcgbazpxmaqepikgafgpznpipbzfggjkjpeyoqxpmgbazfaoagjkef"
+print(dl.letterFrequency(v5))
+print(dl.digraphFrequency(v5, 10))
+print(dl.trigraphFrequency(v5, 10))
