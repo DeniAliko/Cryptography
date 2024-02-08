@@ -57,6 +57,40 @@ def railFence(text, rowNum):
 
     return output
 
+def railFenceDecrypt(text, rowNum):
+    table = [["" for j in range(len(text))] for i in range(rowNum)]
+    walkerCoord = [0, 0]
+    down = True
+    for charindex in range(len(text)):
+        table[walkerCoord[1]][walkerCoord[0]] = "*"
+        if walkerCoord[1] == rowNum - 1 and down:
+            down = not down
+        elif walkerCoord[1] == 0 and not down:
+            down = not down
+
+        if walkerCoord[0] < len(text) - 1:
+            walkerCoord[0] += 1
+        else:
+            break
+        if down:
+            walkerCoord[1] += 1
+        else:
+            walkerCoord[1] -= 1
+
+    for row in table:
+        for i in range(len(row)):
+            if row[i] == "*":
+                row[i] = text[0]
+                text = text[1:]
+
+    output = ""
+    for i in range(len(table[0])):
+        for row in table:
+            if row[i] != "":
+                output += row[i]
+
+    return output
+
 # FREQUENCY ANALYSIS:
 
 def letterFrequency(text):
