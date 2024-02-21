@@ -31,9 +31,12 @@ def genD(key,plainletter):
     return output
 
 def cleanup(text):
-    text = text.replace('U', 'V')
-    text = text.replace('W', 'VV')
-    text = text.replace('J', 'I')
+    text = text.replace('U', '1')
+    text = text.replace('W', '2')
+    text = text.replace('J', '321')
+    text = text.replace('Y', '3')
+    text = text.replace('H', '4')
+    text = text.replace('K', '123')
     out = ''
     for char in text:
         if char in stabilis:
