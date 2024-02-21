@@ -66,7 +66,7 @@ def albertiEncode(pt, k):
 def main():
     k = input("Enter your keyletter: ")
     pt = input("Enter your plaintext (all CAPS): ")
-    ct = albertiEncode(cleanup(pt), k)
+    ct = albertiEncode(cleanup(pt.upper()), k)
     print(ct)
 
 main()
