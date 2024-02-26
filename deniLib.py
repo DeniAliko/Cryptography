@@ -1,13 +1,14 @@
 # MISC:
-def openFile(path, fileName):
-    with open(path + fileName, mode = "r") as f:
+
+def openFile(filePath, fileName):
+    with open(filePath + fileName, mode = "r") as f:
         output = [i.strip() for i in f.readlines()]
 
     return output
 
-def writeFile(path, fileName, text):
-    with open(path + fileName, mode = "w") as f:
-        f.write(text)
+def writeFile(filePath, fileName, textToWrite):
+    with open(filePath + fileName, mode = "w") as f:
+        f.write(textToWrite)
 
 def keepLowercaseLetters(text):
     output = ""
@@ -22,6 +23,23 @@ def printList(list):
     for item in list:
         print(item)
 
+def generateShiftDict(plainLetter, cipherLetter):
+    lowercase = "abcdefghijklmnopqrstuvwxyz"
+    uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    lowerList = [char for char in lowercase]
+    upperList = [char for char in uppercase]
+
+    # Reorganize the two lists to match the key and plainletter
+    upperStart = upperList.index(cipherLetter)
+    upperList = upperList[upperStart:] + upperList[:upperStart]
+
+    # build the dictionary
+    output = {}
+    for i in range(len(lowerList)):
+        output[lowerList[i]] = upperList[i]
+
+    return output
+
 def reverseDict(dictionary):
     output = {}
     for char in dictionary.keys():
@@ -30,18 +48,18 @@ def reverseDict(dictionary):
 
 # TRANSPOSITION CIPHERS
 
-def railFence(text, rowNum):
-    table = [["" for j in range(len(text))] for i in range(rowNum)]
+def railFence(plainText, rowNum):
+    table = [["" for j in range(len(plainText))] for i in range(rowNum)]
     walkerCoord = [0, 0]
     down = True
-    for charindex in range(len(text)):
-        table[walkerCoord[1]][walkerCoord[0]] = text[charindex]
+    for charindex in range(len(plainText)):
+        table[walkerCoord[1]][walkerCoord[0]] = plainText[charindex]
         if walkerCoord[1] == rowNum - 1 and down:
             down = not down
         elif walkerCoord[1] == 0 and not down:
             down = not down
 
-        if walkerCoord[0] < len(text) - 1:
+        if walkerCoord[0] < len(plainText) - 1:
             walkerCoord[0] += 1
         else:
             break
@@ -52,12 +70,12 @@ def railFence(text, rowNum):
 
     output = ""
     for i in range(rowNum):
-        for j in range(len(text)):
+        for j in range(len(plainText)):
             output += table[i][j]
 
     return output
 
-def railFenceDecrypt(text, rowNum):
+def railFenceDecrypt(cipherText, rowNum):
     '''Takes a railfence encrypted string and a given number of rows and decrypts it'''
     # Make the table:
     table = [["" for j in range(len(text))] for i in range(rowNum)]
@@ -65,7 +83,7 @@ def railFenceDecrypt(text, rowNum):
     walkerCoord = [0, 0]
     down = True
     # iterate through each column:
-    for charindex in range(len(text)):
+    for charindex in range(len(cipherText)):
         # along the zigzag, place placeholder "*"
         table[walkerCoord[1]][walkerCoord[0]] = "*"
         # Define what happens when the zigzag pattern hits the top or the bottom of the table
@@ -154,9 +172,10 @@ def trigraphFrequency(text, displayNum):
     return output
 
 # MASC CIPHERS:
-def bruteForce(ct):
+
+def mascBruteForce(cipherText):
     output = []
-    cipher = ct.upper()
+    cipher = cipherText.upper()
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(1, 26):
@@ -191,9 +210,19 @@ def generateCodewordDict(codeword):
 
     return output
 
-def masc(text, subD):
+def masc(plainText, substitutionDict):
     output = ""
-    for char in text:
-        if char in subD.keys():
-            output += subD.get(char, "[NOT FOUND]")
+    for char in plainText:
+        if char in substitutionDict.keys():
+            output += substitutionDict.get(char, "[NOT FOUND]")
+    return output
+
+# PASC CIPHERS:
+
+def vigenereEncrypt(pt, codeword):
+    codeword = keepLowercaseLetters(codeword.lower())
+    output = ""
+    for i in range(len(pt)):
+        output += generateShiftDict("a", codeword[i % len(codeword)].upper())[pt[i]]
+
     return output

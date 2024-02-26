@@ -5,6 +5,7 @@
 # e.g. generating dictionaries or doing substitution with a dictionary.
 
 import random
+import deniLib as dl
 
 stabilis = 'ABCDEFGILMNOPQRSTVXZ1234'
 mobilis  = '&moebkxihcnzurypagqldfts'
@@ -43,6 +44,19 @@ def cleanup(text):
             out += char
     return out
 
+def unCleanUp(text):
+    text = text.replace('123', 'K')
+    text = text.replace('321', 'J')
+    text = text.replace('1', 'U')
+    text = text.replace('2', 'W')
+    text = text.replace('3', 'Y')
+    text = text.replace('4', 'H')
+    
+    out = ''
+    for char in text:
+        out += char
+    return out
+
 def albertiEncode(pt, k):
     ''' encodes a plaintext with the Alberti cipher and a given key '''
     output = "A"
@@ -51,7 +65,7 @@ def albertiEncode(pt, k):
     targetCount = random.randint(1, 10)
     # iterate through each letter in the plantext, substituting with whatever the current dictionary is
     for i in range(len(pt)):
-        if subCount == targetCount:
+        if subCount == 5:
             # after a randomly chosen amount of substitutions, change the dictionary
             newLetter = stabilis[random.randint(0, len(stabilis) - 1)]
             subDict = genD("k", newLetter)
@@ -63,10 +77,24 @@ def albertiEncode(pt, k):
         
     return output
 
+def albertiDecode(ct, k):
+    currentDict = genD(k, ct[0])
+    output = ""
+    for i in range(len(ct)):
+        if ct[i] in stabilis:
+            currentDict = genD(k, ct[i])
+            continue
+        output += dl.reverseDict(currentDict)[ct[i]]
+
+    return output
+
 def main():
+    gate = input("Encode [E] or decode [D]: ")
     k = input("Enter your keyletter: ")
     pt = input("Enter your plaintext (all CAPS): ")
-    ct = albertiEncode(cleanup(pt.upper()), k)
-    print(ct)
+    if gate == "E":
+        print(albertiEncode(cleanup(pt.upper()), k))
+    elif gate == "D":
+        print(unCleanUp(albertiDecode(pt, k).upper()))
 
 main()
