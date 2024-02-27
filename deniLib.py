@@ -1,16 +1,19 @@
 # MISC:
 
 def openFile(filePath, fileName):
+    '''Get a list of the lines of a file'''
     with open(filePath + fileName, mode = "r") as f:
         output = [i.strip() for i in f.readlines()]
 
     return output
 
 def writeFile(filePath, fileName, textToWrite):
+    '''Write text to a file'''
     with open(filePath + fileName, mode = "w") as f:
         f.write(textToWrite)
 
 def keepLowercaseLetters(text):
+    '''Take only the letters in a text and make them lowercase'''
     output = ""
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     for char in text.lower():
@@ -20,10 +23,12 @@ def keepLowercaseLetters(text):
     return output
 
 def printList(list):
+    '''Print each item in a list on its own line'''
     for item in list:
         print(item)
 
-def generateShiftDict(plainLetter, cipherLetter):
+def generateShiftDict(cipherLetter):
+    '''Pick a cipherLetter to map to the letter a in the plaintext'''
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     lowerList = [char for char in lowercase]
@@ -41,6 +46,7 @@ def generateShiftDict(plainLetter, cipherLetter):
     return output
 
 def reverseDict(dictionary):
+    '''Reverses the values of a dictionary assuming a 1 to 1 mapping'''
     output = {}
     for char in dictionary.keys():
         output[dictionary[char]] = char
@@ -49,6 +55,7 @@ def reverseDict(dictionary):
 # TRANSPOSITION CIPHERS
 
 def railFence(plainText, rowNum):
+    '''Encrypt using the railfence cipher'''
     table = [["" for j in range(len(plainText))] for i in range(rowNum)]
     walkerCoord = [0, 0]
     down = True
@@ -121,6 +128,7 @@ def railFenceDecrypt(cipherText, rowNum):
 # FREQUENCY ANALYSIS:
 
 def letterFrequency(text):
+    '''List of most frequent letters'''
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     counts = {}
@@ -142,6 +150,7 @@ def letterFrequency(text):
     return output
 
 def digraphFrequency(text, displayNum):
+    '''List of most frequent digraphs'''
     frequencies = {}
     for i in range(0, len(text) - 1):
         if text[i] + text[i+1] not in frequencies:
@@ -157,6 +166,7 @@ def digraphFrequency(text, displayNum):
     return output
 
 def trigraphFrequency(text, displayNum):
+    '''List of most frequent trigraphs'''
     frequencies = {}
     for i in range(0, len(text) - 2):
         if text[i] + text[i+1] + text[i+2] not in frequencies:
@@ -173,7 +183,8 @@ def trigraphFrequency(text, displayNum):
 
 # MASC CIPHERS:
 
-def mascBruteForce(cipherText):
+def caesarBruteForce(cipherText):
+    '''List of all 26 possible caesar cipher shifts'''
     output = []
     cipher = cipherText.upper()
     lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -190,6 +201,7 @@ def mascBruteForce(cipherText):
     return output
 
 def generateCodewordDict(codeword):
+    '''Generate a substitution dictionary using a codeword'''
     uniqueCharCodeword = ""
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -211,6 +223,7 @@ def generateCodewordDict(codeword):
     return output
 
 def masc(plainText, substitutionDict):
+    '''Substitutes every letter in a plaintext with a substitution dictionary'''
     output = ""
     for char in plainText:
         if char in substitutionDict.keys():
@@ -220,9 +233,41 @@ def masc(plainText, substitutionDict):
 # PASC CIPHERS:
 
 def vigenereEncrypt(pt, codeword):
+    '''Vigenere cipher encrypt'''
     codeword = keepLowercaseLetters(codeword.lower())
     output = ""
     for i in range(len(pt)):
-        output += generateShiftDict("a", codeword[i % len(codeword)].upper())[pt[i]]
+        output += generateShiftDict(codeword[i % len(codeword)].upper())[pt[i]]
 
     return output
+
+def vigenereDecrypt(ct, codeword):
+    '''Vigenere cipher decrypt'''
+    codeword = keepLowercaseLetters(codeword.lower())
+    output = ""
+    for i in range(len(ct)):
+        output += reverseDict(generateShiftDict(codeword[i % len(codeword)].upper()))[ct[i]]
+
+    return output
+
+def autokeyEncrypt(pt, codeword):
+    '''Vigenere autokey cipher encryption'''
+    codeword = keepLowercaseLetters(codeword.lower()) + keepLowercaseLetters(pt.lower())
+    output = ""
+    for i in range(len(pt)):
+        output += generateShiftDict(codeword[i % len(codeword)].upper())[pt[i]]
+
+    return output
+
+def autokeyDecrypt(ct, codeword):
+    '''Vigenere autokey cipher decryption'''
+    codeword = keepLowercaseLetters(codeword.lower())
+    output = ""
+    for i in range(len(ct)):
+        newPtLetter = reverseDict(generateShiftDict(codeword[i % len(codeword)].upper()))[ct[i]]
+        output += newPtLetter
+        codeword += newPtLetter
+
+    return output
+
+print(autokeyDecrypt("CPNTGWULVDHSUBTSKEDNL", "blaise"))
