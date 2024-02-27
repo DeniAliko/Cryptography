@@ -269,5 +269,3 @@ def autokeyDecrypt(ct, codeword):
         codeword += newPtLetter
 
     return output
-
-print(autokeyDecrypt("CPNTGWULVDHSUBTSKEDNL", "blaise"))
