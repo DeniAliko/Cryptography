@@ -52,6 +52,19 @@ def reverseDict(dictionary):
         output[dictionary[char]] = char
     return output
 
+def indexOfCoincidence(text):
+    '''Returns the index of coincidence of a certain text'''
+    possibleChars = {char for char in text.lower()}
+    ic = 0
+    for char in possibleChars:
+        if text.lower().count(char) > 1:
+            num1 = text.lower().count(char)
+            num2 = text.lower().count(char) - 1
+            den1 = len(text)
+            den2 = len(text) - 1
+            ic += (num1 / den1) * (num2 / den2)
+    return ic
+
 # TRANSPOSITION CIPHERS
 
 def railFence(plainText, rowNum):
