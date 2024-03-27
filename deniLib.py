@@ -62,6 +62,8 @@ def indexOfCoincidence(text):
             num2 = text.lower().count(char) - 1
             den1 = len(text)
             den2 = len(text) - 1
+            if den2 == 0:
+                continue
             ic += (num1 / den1) * (num2 / den2)
     return ic
 
@@ -71,6 +73,16 @@ def averageListValues(list):
     for val in list:
         sum += val
     return sum / len(list)
+
+def chiSquare(observed, expected):
+    '''Returns the chi-square test value of two lists (list values are numerical)'''
+    if len(observed) != len(expected):
+        pass
+    chi = 0
+    for i in range(len(observed)):
+        chi += (observed[i] - expected[i])**2 / (expected[i])
+
+    return chi
 
 # TRANSPOSITION CIPHERS
 
@@ -148,7 +160,7 @@ def railFenceDecrypt(cipherText, rowNum):
 # FREQUENCY ANALYSIS:
 
 def letterFrequency(text):
-    '''List of most frequent letters'''
+    '''Dictionary of letters and their frequencies'''
     lowercase = "abcdefghijklmnopqrstuvwxyz"
     uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     counts = {}
@@ -165,7 +177,7 @@ def letterFrequency(text):
 
     output = {}
     for char in counts.keys():
-        output[char] = round((counts[char] / totalCount), 2)
+        output[char] = (counts[char] / totalCount)
 
     return output
 
@@ -304,3 +316,17 @@ def guessVigenereCodewordLength(ct, maxCheckLength):
         if abs(keylengthIC[key] - englishIC) < abs(keylengthIC[guess] - englishIC):
             guess = key
     return guess
+
+def statisticalCrackVigenere(ct, maxKeylength=10):
+    '''Use chi-squared test to guess likely letter shifts for each masc in a vigenere cipher'''
+    keylength = guessVigenereCodewordLength(ct, maxKeylength)
+    mascs = ["" for i in range(keylength)]
+    for i in range(len(ct)):
+        mascs[i % keylength] += ct[i]
+    
+    for substring in mascs:
+        letterFrequencyDict = letterFrequency(substring)
+        englishFrequencyDict = {'a':8.04, 'b':1.48, 'c':3.34, 'd':3.82, 'e':12.49, 'f':2.40,'g':1.87, 'h':5.05, 'i':7.57, 'j':0.16, 'k':0.54, 'l':4.07, 'm':2.51,'n':7.23, 'o':7.64, 'p':2.14, 'q':0.12, 'r':6.28, 's':6.51, 't':9.28,'u':2.73, 'v':1.05, 'w':1.68, 'x':0.23, 'y':1.66, 'z':0.09}
+        shiftStats = {}
+        for i in range(26):
+            shiftStats[i] = chiSquare([], [])
