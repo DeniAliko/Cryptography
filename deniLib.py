@@ -259,7 +259,7 @@ def masc(plainText, substitutionDict):
     output = ""
     for char in plainText:
         if char in substitutionDict.keys():
-            output += substitutionDict.get(char, "[NOT FOUND]")
+            output += substitutionDict[char]
     return output
 
 # PASC CIPHERS:
@@ -317,16 +317,45 @@ def guessVigenereCodewordLength(ct, maxCheckLength):
             guess = key
     return guess
 
-def statisticalCrackVigenere(ct, maxKeylength=10):
-    '''Use chi-squared test to guess likely letter shifts for each masc in a vigenere cipher'''
+def crackVigenere(ct, maxKeylength=10):
+    '''Use chi-squared test to guess likely letter shifts for each masc in a Vigenere Cipher'''
+    # Create a list of the substring MASCs that make up the Vigenere Cipher
     keylength = guessVigenereCodewordLength(ct, maxKeylength)
     mascs = ["" for i in range(keylength)]
+    crackedMascs = []
     for i in range(len(ct)):
         mascs[i % keylength] += ct[i]
     
+    # Individually break each substring using chi-squared test and frequency analysis
     for substring in mascs:
         letterFrequencyDict = letterFrequency(substring)
         englishFrequencyDict = {'a':8.04, 'b':1.48, 'c':3.34, 'd':3.82, 'e':12.49, 'f':2.40,'g':1.87, 'h':5.05, 'i':7.57, 'j':0.16, 'k':0.54, 'l':4.07, 'm':2.51,'n':7.23, 'o':7.64, 'p':2.14, 'q':0.12, 'r':6.28, 's':6.51, 't':9.28,'u':2.73, 'v':1.05, 'w':1.68, 'x':0.23, 'y':1.66, 'z':0.09}
-        shiftStats = {}
+        likelyShift = 0
+        likeleyChiSquare = 99999999999999999999999
+
+        # Generate the most likely shift value using chi-squared test by iterating through all possible shift values
         for i in range(26):
-            shiftStats[i] = chiSquare([], [])
+            # test the given shift value
+            shiftedLetterFrequencyDict = {}
+            for j in range(i, 26):
+                shiftedLetterFrequencyDict[list(letterFrequencyDict.keys())[j]] = letterFrequencyDict[list(letterFrequencyDict.keys())[j]]
+            for j in range(i):
+                shiftedLetterFrequencyDict[list(letterFrequencyDict.keys())[j]] = letterFrequencyDict[list(letterFrequencyDict.keys())[j]]
+
+            # do the chi-squared test and see if the value is lower than the previous lowest value
+            testChiSquare = chiSquare([shiftedLetterFrequencyDict[key] for key in shiftedLetterFrequencyDict.keys()], [englishFrequencyDict[key] for key in englishFrequencyDict.keys()])
+            if testChiSquare < likeleyChiSquare:
+                likelyShift = i
+                likeleyChiSquare = testChiSquare
+
+        # use the most likely shift value to decode the given substring
+        crackedMascs.append(masc(substring, reverseDict(generateShiftDict("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[likelyShift]))))
+
+    # re-weave the deciphered substrings together to form a deciphered output
+    output = ""
+    for i in range(len(crackedMascs[1])):
+        for j in range(len(crackedMascs)):
+            if i + 1 <= len(crackedMascs[j]):
+                output += crackedMascs[j][i]
+    
+    return output
