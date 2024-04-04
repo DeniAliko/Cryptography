@@ -317,11 +317,12 @@ def guessVigenereCodewordLength(ct, maxCheckLength):
             guess = key
     return guess
 
-def crackVigenere(ct, maxKeylength=10):
+def crackVigenere(ct, returnKeyword = False, maxKeylength=10):
     '''Use chi-squared test to guess likely letter shifts for each masc in a Vigenere Cipher'''
     # Create a list of the substring MASCs that make up the Vigenere Cipher
     keylength = guessVigenereCodewordLength(ct, maxKeylength)
     mascs = ["" for i in range(keylength)]
+    likelyShifts = []
     crackedMascs = []
     for i in range(len(ct)):
         mascs[i % keylength] += ct[i]
@@ -350,6 +351,7 @@ def crackVigenere(ct, maxKeylength=10):
 
         # use the most likely shift value to decode the given substring
         crackedMascs.append(masc(substring, reverseDict(generateShiftDict("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[likelyShift]))))
+        likelyShifts.append(likelyShift)
 
     # re-weave the deciphered substrings together to form a deciphered output
     output = ""
@@ -357,5 +359,12 @@ def crackVigenere(ct, maxKeylength=10):
         for j in range(len(crackedMascs)):
             if i + 1 <= len(crackedMascs[j]):
                 output += crackedMascs[j][i]
-    
+    # if asked for by the user, returns the keyword used in the vigenere cipher
+    if returnKeyword:
+        twoOut = [output, ""]
+        for shift in likelyShifts:
+            twoOut[1] += "ABCDEFGHIJKLMNOPQRSTUVEXYZ"[shift]
+
+        return twoOut
+
     return output
