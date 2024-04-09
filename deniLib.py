@@ -375,3 +375,12 @@ def crackVigenere(ct, returnKeyword = False, maxKeylength=10):
 
 # Enigma
 
+def rotateRotor(rotor):
+    '''See slideList'''
+    return slideList(rotor)
+
+def rotorForwards(letter, rotor):
+    '''Take a letter (Capital character) and a rotor list (rI, rII, rIII) and translate the letter forwards through the rotor'''
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    return alphabet[(alphabet.find(letter) + rotor[[alphabet.find(letter)]]) % 26]
