@@ -84,9 +84,9 @@ def chiSquare(observed, expected):
 
     return chi
 
-def slideList(list):
+def slideList(inputList):
     '''Take the first entry in a list and slide it to the end'''
-    return list[1:] + list[0]
+    return inputList[1:] + [inputList[0]]
 
 # TRANSPOSITION CIPHERS
 
@@ -383,4 +383,4 @@ def rotorForwards(letter, rotor):
     '''Take a letter (Capital character) and a rotor list (rI, rII, rIII) and translate the letter forwards through the rotor'''
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    return alphabet[(alphabet.find(letter) + rotor[[alphabet.find(letter)]]) % 26]
+    return alphabet[(alphabet.find(letter) + rotor[alphabet.find(letter)]) % 26]
