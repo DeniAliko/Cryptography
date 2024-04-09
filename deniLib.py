@@ -84,6 +84,10 @@ def chiSquare(observed, expected):
 
     return chi
 
+def slideList(list):
+    '''Take the first entry in a list and slide it to the end'''
+    return list[1:] + list[0]
+
 # TRANSPOSITION CIPHERS
 
 def railFence(plainText, rowNum):
@@ -368,3 +372,6 @@ def crackVigenere(ct, returnKeyword = False, maxKeylength=10):
         return twoOut
 
     return output
+
+# Enigma
+
