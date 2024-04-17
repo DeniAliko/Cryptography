@@ -450,7 +450,7 @@ def enigmaTransform():
     if True:
         rotorStates = generateRotorSettings()
         plugboardSettings = generatePlugboard()
-        plainText = input("Input plain text here: ")
+        plainText = input("Input text here: ")
 
         # Set rotor III:
         for i in range(rotorStates[2]):
@@ -474,9 +474,11 @@ def enigmaTransform():
             if rotorStates[2] == 22:
                 rotorII = rotateRotor(rotorII)
                 rotorStates[1] = (rotorStates[1] + 1) % 26
-            if rotorStates[1] == 5:
-                rotorI = rotateRotor(rotorI)
-                rotorStates[0] = (rotorStates[0] + 1) % 26
+                if rotorStates[1] == 4:
+                    rotorI = rotateRotor(rotorI)
+                    rotorStates[0] = (rotorStates[0] + 1) % 26
+                    rotorII = rotateRotor(rotorII)
+                    rotorStates[1] = (rotorStates[1] + 1) % 26
 
         # SUBSTITUTE
         if True:
@@ -495,8 +497,7 @@ def enigmaTransform():
                 letter9 = plugboardSettings[letter8]
             else:
                 letter9 = letter8
+
             output += letter9
 
     return output
-
-print(enigmaTransform())
