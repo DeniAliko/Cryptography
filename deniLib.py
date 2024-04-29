@@ -501,3 +501,100 @@ def enigmaTransform():
             output += letter9
 
     return output
+
+# VERNAM CIPHER
+
+def ITA2Encode(text, returnWithSpaces = False):
+    '''Encodes a text into binary using the ITA2 Mapping'''
+    text = text.lower()
+    ITA2_ltr = {"e":1, "\n":2, "a":3, " ":4, "s":5, "i":6, "u":7, "d":9, "r":10, "j":11, \
+            "n":12, "f":13, "c":14, "k":15, "t":16, "z":17, "l":18, "w":19, "h":20, \
+            "y":21, "p":22, "q":23, "o":24, "b":25, "g":26, "m":28, "x":29, "v":30}
+    ITA2_fig = {"@":0, "3":1, "-":3, "'":5, "8":6, "7":7, "4":10, \
+                ",":12, "!":13, ":":14, "(":15, "5":16, "+":17, ")":18, "2":19, "$":20, \
+                "6":21, "0":22, "1":23, "9":24, "?":25, "&":26, ".":28, "/":29, ";":30}
+    LTRS = 31
+    FIGS = 27
+    output = ""
+    letter = True
+
+    if text[0] in ITA2_ltr.keys():
+        output += format(LTRS, 'b')
+        letter = True
+        output += " "
+    elif text[0] in ITA2_fig.keys():
+        output += format(FIGS, 'b')
+        letter = False
+        output += " "
+
+    for char in text:
+        if char in ITA2_ltr.keys() and not letter:
+            output += format(LTRS, 'b')
+            letter = True
+            output += " "
+        elif char in ITA2_fig.keys() and letter:
+            output += format(FIGS, 'b')
+            letter = False
+            output += " "
+
+        if letter:
+            output += format(ITA2_ltr[char], 'b')
+        if not letter:
+            output += format(ITA2_fig[char], 'b')
+
+        output += " "
+    
+    leadingZeroOutput = ""
+    cacheString = ""
+    for i in range(0, len(output)):
+        if output[i] != " ":
+            cacheString += output[i]
+        if output[i] == " ":
+            if len(cacheString) != 5:
+                cacheString = "0" * (5 - len(cacheString)) + cacheString
+
+            leadingZeroOutput += cacheString
+            if returnWithSpaces:
+                leadingZeroOutput += " "
+            cacheString = ""
+
+    return leadingZeroOutput
+
+def vernamTransform(text, key):
+    '''Use the Vernam transform to encrypt/decrypt a binary message'''
+    output = ""
+    for i in range(0, len(text)):
+        if text[i] == key[i]:
+            output += "1"
+        else:
+            output += "0"
+    return output
+
+def ITA2Decode(text):
+    '''Decode an ITA2 binary message back into text'''
+    ITA2_ltr = {"e":1, "\n":2, "a":3, " ":4, "s":5, "i":6, "u":7, "d":9, "r":10, "j":11, \
+        "n":12, "f":13, "c":14, "k":15, "t":16, "z":17, "l":18, "w":19, "h":20, \
+        "y":21, "p":22, "q":23, "o":24, "b":25, "g":26, "m":28, "x":29, "v":30}
+    ITA2_fig = {"@":0, "3":1, "-":3, "'":5, "8":6, "7":7, "4":10, \
+                ",":12, "!":13, ":":14, "(":15, "5":16, "+":17, ")":18, "2":19, "$":20, \
+                "6":21, "0":22, "1":23, "9":24, "?":25, "&":26, ".":28, "/":29, ";":30}
+    ITA2_ltr = reverseDict(ITA2_ltr)
+    ITA2_fig = reverseDict(ITA2_fig)
+    LTRS = 31
+    FIGS = 27
+
+    output = ""
+    for i in range(0, len(text), 5):
+        cacheString = "0b" + text[i:i+5]
+        number = int(cacheString, 2)
+        if number == 31:
+            activeDict = ITA2_ltr
+            continue
+        if number == 27:
+            activeDict = ITA2_fig
+            continue
+
+        output += activeDict[number]
+        cacheString = ""
+
+    return output
