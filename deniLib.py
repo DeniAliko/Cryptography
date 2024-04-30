@@ -88,6 +88,21 @@ def slideList(inputList):
     '''Take the first entry in a list and slide it to the end'''
     return inputList[1:] + [inputList[0]]
 
+def sieveOfEratosthenes(number):
+    '''Return primes smaller than or equal to a given number'''
+    prime = [True for i in range(number+1)]
+    primeCheck = 2
+    while primeCheck ** 2 <= number:
+        if prime[primeCheck] == True:
+            for i in range(primeCheck ** 2, number + 1, primeCheck):
+                prime[i] = False
+        primeCheck += 1
+    output = []
+    for i in range(2, number+1):
+        if prime[i]:
+            output.append(i)
+    return output
+
 # TRANSPOSITION CIPHERS
 
 def railFence(plainText, rowNum):
@@ -598,3 +613,23 @@ def ITA2Decode(text):
         cacheString = ""
 
     return output
+
+# RSA
+
+def isGenerator(generator, key):
+    '''Check if a given generator is actually a generator for a given key'''
+    output = True
+    moduluses = []
+    for i in range(0, key - 1):
+        moduluses.append((generator**i) % key)
+    return len(moduluses) == len(set(moduluses))
+
+def findGenerator(key):
+    '''Finds the smallest generator number for a given key (slow)'''
+    primesUpTo = sieveOfEratosthenes(key)
+    i = 0
+    while True:
+        if isGenerator(primesUpTo[i], key):
+            return primesUpTo[i]
+        else:
+            i += 1
