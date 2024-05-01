@@ -519,7 +519,7 @@ def enigmaTransform():
 
 # VERNAM CIPHER
 
-def ITA2Encode(text, returnWithSpaces = False):
+def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False):
     '''Encodes a text into binary using the ITA2 Mapping'''
     text = text.lower()
     ITA2_ltr = {"e":1, "\n":2, "a":3, " ":4, "s":5, "i":6, "u":7, "d":9, "r":10, "j":11, \
@@ -532,6 +532,40 @@ def ITA2Encode(text, returnWithSpaces = False):
     FIGS = 27
     output = ""
     letter = True
+
+    if returnAsCSV:
+        if text[0] in ITA2_ltr.keys():
+            output += str(LTRS) + ","
+            letter = True
+            output += " "
+        elif text[0] in ITA2_fig.keys():
+            output += str(FIGS) + ","
+            letter = False
+            output += " "
+
+        for char in text:
+            if char in ITA2_ltr.keys() and not letter:
+                output += str(LTRS) + ","
+                letter = True
+                output += " "
+            elif char in ITA2_fig.keys() and letter:
+                output += str(FIGS) + ","
+                letter = False
+                output += " "
+
+            if letter:
+                output += str(ITA2_ltr[char]) + ","
+            if not letter:
+                output += str(ITA2_fig[char]) + ","
+
+            output += " "
+        output = output[:-2]
+        realOutput = ""
+        for char in output:
+            if char != " ":
+                realOutput += char
+        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "ct.csv", realOutput)
+        return
 
     if text[0] in ITA2_ltr.keys():
         output += format(LTRS, 'b')
@@ -575,17 +609,26 @@ def ITA2Encode(text, returnWithSpaces = False):
 
     return leadingZeroOutput
 
-def vernamTransform(text, key):
+def vernamTransform(text, key, useIntCSVIntKey = False, CSVFileName = "", CSVKeyName = ""):
     '''Use the Vernam transform to encrypt/decrypt a binary message'''
     output = ""
+    if useIntCSVIntKey:
+        intCt = [int(i) for i in openFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", CSVFileName)[0].split(",")]
+        intKey = [int(i) for i in openFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", CSVKeyName)[0].split(",")]
+        for i in range(len(intCt)):
+            output += str(intCt[i] ^ intKey[i])+","
+        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "vernamCt.csv", output)
+        return
+    
     for i in range(0, len(text)):
         if text[i] == key[i]:
             output += "1"
         else:
             output += "0"
+            
     return output
 
-def ITA2Decode(text):
+def ITA2Decode(text, useCSV = False, fileName = ""):
     '''Decode an ITA2 binary message back into text'''
     ITA2_ltr = {"e":1, "\n":2, "a":3, " ":4, "s":5, "i":6, "u":7, "d":9, "r":10, "j":11, \
         "n":12, "f":13, "c":14, "k":15, "t":16, "z":17, "l":18, "w":19, "h":20, \
@@ -599,6 +642,21 @@ def ITA2Decode(text):
     FIGS = 27
 
     output = ""
+    if useCSV:
+        csv = openFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", fileName)[0]
+        values = [int(i) for i in csv.split(",")]
+        for number in values:
+            if number == 31:
+                activeDict = ITA2_ltr
+                continue
+            if number == 27:
+                activeDict = ITA2_fig
+                continue
+
+            output += activeDict[number]
+            cacheString = ""
+        return output
+
     for i in range(0, len(text), 5):
         cacheString = "0b" + text[i:i+5]
         number = int(cacheString, 2)
