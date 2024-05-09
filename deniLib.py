@@ -1,3 +1,5 @@
+import random
+
 # MISC:
 
 def openFile(filePath, fileName):
@@ -519,7 +521,7 @@ def enigmaTransform():
 
 # VERNAM CIPHER
 
-def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False):
+def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False, returnCSVList = False):
     '''Encodes a text into binary using the ITA2 Mapping'''
     text = text.lower()
     ITA2_ltr = {"e":1, "\n":2, "a":3, " ":4, "s":5, "i":6, "u":7, "d":9, "r":10, "j":11, \
@@ -533,7 +535,7 @@ def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False):
     output = ""
     letter = True
 
-    if returnAsCSV:
+    if returnAsCSV or returnCSVList:
         if text[0] in ITA2_ltr.keys():
             output += str(LTRS) + ","
             letter = True
@@ -564,7 +566,10 @@ def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False):
         for char in output:
             if char != " ":
                 realOutput += char
-        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "ct.csv", realOutput)
+        if returnCSVList:
+            realerOutput = realOutput.split(",")
+            return [int(i) for i in realerOutput]
+        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "recentITA2Encrypt.csv", realOutput)
         return
 
     if text[0] in ITA2_ltr.keys():
@@ -609,7 +614,7 @@ def ITA2Encode(text, returnWithSpaces = False, returnAsCSV = False):
 
     return leadingZeroOutput
 
-def vernamTransform(text, key, useIntCSVIntKey = False, CSVFileName = "", CSVKeyName = ""):
+def vernamTransform(text = "", key = 0, useIntCSVIntKey = False, CSVFileName = "", CSVKeyName = ""):
     '''Use the Vernam transform to encrypt/decrypt a binary message'''
     output = ""
     if useIntCSVIntKey:
@@ -617,7 +622,7 @@ def vernamTransform(text, key, useIntCSVIntKey = False, CSVFileName = "", CSVKey
         intKey = [int(i) for i in openFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", CSVKeyName)[0].split(",")]
         for i in range(len(intCt)):
             output += str(intCt[i] ^ intKey[i])+","
-        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "vernamCt.csv", output)
+        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "vernamCt.csv", output[:-1])
         return
     
     for i in range(0, len(text)):
@@ -691,3 +696,62 @@ def findGenerator(key):
             return primesUpTo[i]
         else:
             i += 1
+
+def generateSharedKey(selfPrivateKey, publicGenerator, publicKey, bigA, usePlainTextCSV = False, plainTextCSVFileName = ""):
+    '''Generate a shared key given your own private key, the public key, public generator, and the "Big A" value: generator**(other person's private key) % public key'''
+    B = (publicGenerator**(selfPrivateKey)) % publicKey
+    random.seed((bigA**selfPrivateKey) % publicKey)
+    if usePlainTextCSV:
+        plainText = openFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", plainTextCSVFileName)[0]
+        plainTextITA2 = [int(i) for i in plainText.split(",")]
+        intKey = [random.randint(0, 31) for i in range(len(plainTextITA2))]
+        writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "recentITA2Encrypt.csv", plainText)
+    else:
+        plainText = input("Enter plaintext: ")
+        ITA2Encode(plainText, False, True)
+        intKey = [random.randint(0, 31) for i in range(len(ITA2Encode(plainText, False, False, True)))]
+    strIntKey = ""
+    for i in intKey:
+        strIntKey += str(i)
+        strIntKey += ","
+    
+    # for purposes of RSA assignment: Deni's private key = 115249, generator = 5, public key = 10007, A = 4873
+    # 115249, 5, 10007, 4873
+    writeFile("C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\", "csvIntKey.csv", strIntKey[:-1])
+
+def mainDiffieHelmanInterface():
+    print("Encrypt a message [1]")
+    print("Decrypt a message [2]")
+    encryptDecryptGate = input(": ")
+    if encryptDecryptGate == "1":
+        privateKey = 115249
+        generator = 5
+        publicKey = input("Other person's public key (Fontaine's is 10007): ")
+        if publicKey == "":
+            publicKey = 10007
+        publicKey = int(publicKey)
+        bigA = input("Other person's Diffie-Helman key (Fontaine's is 4873): ")
+        if bigA == "":
+            bigA = 4873
+        bigA = int(bigA)
+        generateSharedKey(privateKey, generator, publicKey, bigA)
+        vernamTransform("", 0, True, "recentITA2Encrypt.csv", "csvIntKey.csv")
+        path = "C:\\Users\\denia\\OneDrive\\Desktop\\programming1\\Cryptography\\"
+        writeFile(path, "DHEncryptedFile.csv", openFile(path, "vernamCt.csv")[0])
+        print('Encrypted file has been saved as "DHEncryptedFile.csv"!')
+    elif encryptDecryptGate == "2":
+        privateKey = 115249
+        generator = 5
+        publicKey = input("Other person's public key (Fontaine's is 10007): ")
+        if publicKey == "":
+            publicKey = 10007
+        publicKey = int(publicKey)
+        bigA = input("Other person's Diffie-Helman key (Fontaine's is 4873): ")
+        if bigA == "":
+            bigA = 4873
+        bigA = int(bigA)
+        generateSharedKey(privateKey, generator, publicKey, bigA, True, input("Name of the encrypted file (.csv): "))
+        vernamTransform("", 0, True, "recentITA2Encrypt.csv", "csvIntKey.csv")
+        print(ITA2Decode("", True, "vernamCt.csv"))
+
+mainDiffieHelmanInterface()
