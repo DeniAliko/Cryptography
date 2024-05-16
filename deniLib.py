@@ -677,7 +677,7 @@ def ITA2Decode(text, useCSV = False, fileName = ""):
 
     return output
 
-# RSA
+# DIFFIE-HELMAN
 
 def isGenerator(generator, key):
     '''Check if a given generator is actually a generator for a given key'''
@@ -754,4 +754,76 @@ def mainDiffieHelmanInterface():
         vernamTransform("", 0, True, "recentITA2Encrypt.csv", "csvIntKey.csv")
         print(ITA2Decode("", True, "vernamCt.csv"))
 
-mainDiffieHelmanInterface()
+# RSA
+
+def generateConstants(p = 691, q = 937, e = 65537):
+    '''Generates RSA constants in the form [N, e, phi(N), d]'''
+    output = [p*q, e, (p-1)*(q-1)]
+    for i in range((p-1)*(q-1)):
+        if (e*i) % ((p-1)*(q-1)) == 1:
+            d = i
+            break
+    output.append(d)
+    return output
+
+def unicodeConvert(text):
+    '''convert a text into a list of unicode codes'''
+    output = []
+    for char in text:
+        output.append(ord(char))
+    return output
+
+def charwiseRSA(textList, N, e):
+    '''Apply the RSA cipher character by character on a list of unicode'''
+    output = []
+    for char in textList:
+        output.append((char ** e) % N)
+    return output
+
+def decipherRSA(unicodeCiperText, N, d):
+    '''Uses the "d" value to decipher unicode RSA cipher text'''
+    output = []
+    for char in unicodeCiperText:
+        peepee = char ** d % N
+        output += chr(peepee)
+    return output
+
+def RSAinterface():
+    '''Organizes RSA encryption and decryption'''
+    print("Encrypt a message [1]")
+    print("Decrypt a message [2]")
+    encryptDecryptGate = input(": ")
+    if encryptDecryptGate == "1":
+        n = input("Recipient's public key: ")
+        if n == "":
+            # Mr Fontaine's key
+            n = 542029
+        else:
+            n = int(n)
+        e = input("Recipient's encryption key: ")
+        if e == "":
+            # Mr Fontaine's key
+            e = 65537
+        else:
+            e = int(e)
+
+        print("Input plaintext here")
+        plainText = input(": ")
+        plainText = unicodeConvert(plainText)
+        print(charwiseRSA(plainText, n, e))
+    elif encryptDecryptGate == "2":
+        constantList = generateConstants()
+        print(f"Deni's public key is {constantList[0]} and his encryption key is {constantList[1]}.")
+        print("Input the cipher text as a list of unicode characters")
+        cipherText = input(": ")
+        realCipherText = []
+        cacheString = ""
+        for i in range(len(cipherText)):
+            if cipherText[i] in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
+                cacheString += cipherText[i]
+            if cipherText[i] == "," or cipherText[i] == "]":
+                realCipherText.append(int(cacheString))
+                cacheString = ""
+        print(realCipherText)
+
+        print(decipherRSA(realCipherText, constantList[0], constantList[3]))
